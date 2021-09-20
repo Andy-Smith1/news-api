@@ -1,141 +1,86 @@
+const { formatData } = require("../db/utils/data-manipulation");
+
 const {
-  formatTopics,
-  formatUsers,
-  formatArticles,
-} = require("../db/utils/data-manipulation");
+  articleData,
+  topicData,
+  userData,
+  commentData,
+} = require("../db/data/test-data/index");
+const format = require("pg-format");
 
-describe("formatTopics", () => {
+describe("formatData", () => {
   test("should return an array", () => {
-    const actual = formatTopics([
-      { description: "Code is love, code is life", slug: "coding" },
-    ]);
-
+    const actual = formatData([{}]);
     expect(Array.isArray(actual)).toBe(true);
   });
-  test("should return nested arrays with each property ", () => {
-    const input = [
-      { description: "Code is love, code is life", slug: "coding" },
-      { description: "FOOTIE!", slug: "football" },
-      {
-        description: "Hey good looking, what you got cooking?",
-        slug: "cooking",
-      },
-    ];
-    const expected = [
-      ["coding", "Code is love, code is life"],
-      ["football", "FOOTIE!"],
-      ["cooking", "Hey good looking, what you got cooking?"],
-    ];
-
-    expect(formatTopics(input)).toEqual(expected);
-  });
-  test("input should not be mutated", () => {
-    const input = [
+  test("should return a nested array with values from each property in object", () => {
+    const testTopic = [
       { description: "Code is love, code is life", slug: "coding" },
     ];
-    const inputCopy = [
-      { description: "Code is love, code is life", slug: "coding" },
-    ];
-    formatTopics(input);
-    expect(input).toEqual(inputCopy);
-  });
-  test("returned array holds a different reference in memory", () => {
-    const input = [
-      { description: "Code is love, code is life", slug: "coding" },
-    ];
-    const actual = formatTopics(input);
-    expect(actual).not.toBe(input);
-    expect(actual[0]).not.toBe(input[0]);
-  });
-});
-
-describe("formatUsers", () => {
-  test("should return an array", () => {
-    const actual = formatUsers([
+    const topicExpect = [["Code is love, code is life", "coding"]];
+    expect(formatData(testTopic)).toEqual(topicExpect);
+    const testUsers = [
       {
         username: "tickle122",
         name: "Tom Tickle",
         avatar_url:
           "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
       },
-    ]);
-    expect(Array.isArray(actual)).toBe(true);
-  });
-  test("should return a nested array with each property", () => {
-    const actual = formatUsers([
-      {
-        username: "tickle122",
-        name: "Tom Tickle",
-        avatar_url:
-          "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
-      },
-    ]);
-    const expected = [
+    ];
+    const usersExpect = [
       [
         "tickle122",
-        "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
         "Tom Tickle",
+        "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
       ],
     ];
-    expect(actual).toEqual(expected);
+    expect(formatData(testUsers)).toEqual(usersExpect);
   });
-  test("input should not be mutated", () => {
-    const input = [{ a: 1, b: 2, c: 3 }];
-    formatUsers(input);
-    expect(input).toEqual([{ a: 1, b: 2, c: 3 }]);
-  });
-  test("returned array holds different reference in memory", () => {
-    const input = [{ a: 1, b: 2, c: 3 }];
-    const actual = formatUsers(input);
-    expect(actual).not.toBe(input);
-    expect(actual[0]).not.toBe(input[0]);
-  });
-});
-
-describe("formatArticles", () => {
-  test("should return an array", () => {
-    const actual = formatArticles([{}]);
-    expect(Array.isArray(actual)).toBe(true);
-  });
-  test("should return an array of nested arrays with each property", () => {
+  test("works with multiple objects in array", () => {
     const input = [
       {
-        title:
-          "The Rise Of Thinking Machines: How IBM's Watson Takes On The World",
-        topic: "coding",
-        author: "jessjelly",
-        body: "Many people know Watson as the IBM-developed cognitive super computer that won the Jeopardy! gameshow in 2011. In truth, Watson is not actually a computer but a set of algorithms and APIs, and since winning TV fame (and a $1 million prize) IBM has put it to use tackling tough problems in every industry from healthcare to finance. Most recently, IBM has announced several new partnerships which aim to take things even further, and put its cognitive capabilities to use solving a whole new range of problems around the world.",
-        created_at: new Date(1589418120000),
-        votes: 0,
+        description: "The man, the Mitch, the legend",
+        slug: "mitch",
+      },
+      {
+        description: "Not dogs",
+        slug: "cats",
+      },
+      {
+        description: "what books are made of",
+        slug: "paper",
       },
     ];
-    const actual = formatArticles(input);
-    expect(actual[0].length).toBe(6);
-    expect(actual[0]).toContain("coding");
-    expect(actual[0]).toContain("jessjelly");
+    const expected = [
+      ["The man, the Mitch, the legend", "mitch"],
+      ["Not dogs", "cats"],
+      ["what books are made of", "paper"],
+    ];
+    expect(formatData(input)).toEqual(expected);
+    expect(formatData(userData)).toHaveLength(4);
   });
   test("input should not be mutated", () => {
     const input = [
       {
-        title: "Living in the shadow of a great man",
-        topic: "mitch",
-        author: "butter_bridge",
-        body: "I find this existence challenging",
-        created_at: new Date(1594329060000),
-        votes: 100,
+        description: "The man, the Mitch, the legend",
+        slug: "mitch",
       },
     ];
-    formatArticles(input);
-    console.log(formatArticles(input));
+    formatData(input);
     expect(input).toEqual([
       {
-        title: "Living in the shadow of a great man",
-        topic: "mitch",
-        author: "butter_bridge",
-        body: "I find this existence challenging",
-        created_at: new Date(1594329060000),
-        votes: 100,
+        description: "The man, the Mitch, the legend",
+        slug: "mitch",
       },
     ]);
+  });
+  test("returned array should hold different reference in memory", () => {
+    const input = [
+      {
+        description: "The man, the Mitch, the legend",
+        slug: "mitch",
+      },
+    ];
+    expect(formatData(input)).not.toBe(input);
   });
 });

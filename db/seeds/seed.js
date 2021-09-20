@@ -1,5 +1,5 @@
 const db = require("../connection.js");
-const { formatTopics, formatUsers } = require("../utils/data-manipulation.js");
+const { formatData } = require("../utils/data-manipulation.js");
 const format = require("pg-format");
 
 const seed = async (data) => {
@@ -22,30 +22,37 @@ const seed = async (data) => {
       votes INT DEFAULT 0,
       topic VARCHAR(30) REFERENCES topics(slug),
       author VARCHAR(30) REFERENCES users(username),
-      created_at INT DEFAULT ${Date.now()}
+      created_at TIMESTAMP DEFAULT NOW()
     );`);
     await db.query(`CREATE TABLE comments (
       comment_id SERIAL PRIMARY KEY,
       author VARCHAR(30) REFERENCES users(username),
       article_id INT REFERENCES articles(article_id),
       VOTES INT DEFAULT 0,
-      created_at INT DEFAULT ${Date.now()},
+      created_at TIMESTAMP DEFAULT NOW(),
       body TEXT NOT NULL
     );`);
     await db.query(
       format(
         `INSERT INTO topics
-    (slug, description)
+    (description, slug)
     VALUES %L
     RETURNING *;`,
-        formatTopics(topicData)
+        formatData(topicData)
       )
     );
     await db.query(
       format(
         `INSERT INTO users
-    (username, avatar_url, name) VALUES %L RETURNING *;`,
-        formatUsers(userData)
+    (username, name, avatar_url) VALUES %L RETURNING *;`,
+        formatData(userData)
+      )
+    );
+    await db.query(
+      format(
+        `INSERT INTO articles (title, topic, author, body, created_at, votes)
+        VALUES %L RETURNING *;`,
+        formatData(articleData)
       )
     );
   } catch (err) {
