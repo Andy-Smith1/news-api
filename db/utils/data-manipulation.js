@@ -11,3 +11,10 @@ exports.formatUsers = (users) => {
     return [user.username, user.avatar_url, user.name];
   });
 };
+
+exports.formatArticles = (articles) => {
+  return articles.map((article) => {
+    const { title, topic, author, body, created_at, votes } = article;
+    return [title, topic, author, body, created_at, votes];
+  });
+};
