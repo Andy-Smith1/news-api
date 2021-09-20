@@ -7,6 +7,17 @@ const app = require("../app.js");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("GET Invalid path", () => {
+  test("404: Tells user that the path is invalid", () => {
+    return request(app)
+      .get("/api/turtles")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Invalid URL" });
+      });
+  });
+});
+
 describe("GET /api/topics", () => {
   test("200: returns array of topic objects", () => {
     return request(app)
