@@ -1,4 +1,6 @@
 const db = require("../connection.js");
+const { formatTopics, formatUsers } = require("../utils/data-manipulation.js");
+const format = require("pg-format");
 
 const seed = async (data) => {
   const { articleData, commentData, topicData, userData } = data;
@@ -30,6 +32,22 @@ const seed = async (data) => {
       created_at INT DEFAULT ${Date.now()},
       body TEXT NOT NULL
     );`);
+    await db.query(
+      format(
+        `INSERT INTO topics
+    (slug, description)
+    VALUES %L
+    RETURNING *;`,
+        formatTopics(topicData)
+      )
+    );
+    await db.query(
+      format(
+        `INSERT INTO users
+    (username, avatar_url, name) VALUES %L RETURNING *;`,
+        formatUsers(userData)
+      )
+    );
   } catch (err) {
     console.log(err);
   }
