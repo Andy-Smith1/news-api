@@ -28,7 +28,7 @@ const seed = async (data) => {
       comment_id SERIAL PRIMARY KEY,
       author VARCHAR(30) REFERENCES users(username),
       article_id INT REFERENCES articles(article_id),
-      VOTES INT DEFAULT 0,
+      votes INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW(),
       body TEXT NOT NULL
     );`);
@@ -53,6 +53,13 @@ const seed = async (data) => {
         `INSERT INTO articles (title, topic, author, body, created_at, votes)
         VALUES %L RETURNING *;`,
         formatData(articleData)
+      )
+    );
+    await db.query(
+      format(
+        `INSERT INTO comments 
+    (body, votes, author, article_id, created_at) VALUES %L RETURNING*;`,
+        formatData(commentData)
       )
     );
   } catch (err) {
