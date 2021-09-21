@@ -34,3 +34,23 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: returns requested article", () => {
+    return request(app)
+      .get("/api/articles/9")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toEqual({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: 9,
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: 0,
+          comment_count: 2,
+        });
+      });
+  });
+});

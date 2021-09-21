@@ -1,5 +1,5 @@
 const { formatData } = require("../db/utils/data-manipulation");
-
+const db = require("../db/connection");
 const {
   articleData,
   topicData,
