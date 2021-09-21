@@ -1,12 +1,6 @@
-const { formatData } = require("../db/utils/data-manipulation");
+const { formatData, countComments } = require("../db/utils/data-manipulation");
 const db = require("../db/connection");
-const {
-  articleData,
-  topicData,
-  userData,
-  commentData,
-} = require("../db/data/test-data/index");
-const format = require("pg-format");
+const { userData } = require("../db/data/test-data/index");
 
 describe("formatData", () => {
   test("should return an array", () => {

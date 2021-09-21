@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const { countComments } = require("../db/utils/data-manipulation.js");
 
 exports.selectArticlesById = async (article_id) => {
   const result = await db.query(
@@ -9,15 +10,8 @@ exports.selectArticlesById = async (article_id) => {
   if (result.rows.length === 0) {
     return Promise.reject({ status: 404, msg: "Not found!" });
   }
-  const comments = await db.query(
-    `SELECT * FROM articles
-  JOIN comments
-  ON articles.article_id = comments.article_id
-  WHERE articles.article_id = $1;`,
-    [article_id]
-  );
 
-  const commentCount = comments.rows.length;
+  const commentCount = await countComments(article_id);
   const article = result.rows[0];
   article.comment_count = commentCount;
   return article;
