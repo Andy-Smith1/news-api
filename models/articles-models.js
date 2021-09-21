@@ -22,3 +22,12 @@ exports.selectArticlesById = async (article_id) => {
   article.comment_count = commentCount;
   return article;
 };
+
+exports.updateArticleVotes = async (article_id, body) => {
+  const updatedArticle = await db.query(
+    `UPDATE articles
+  SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`,
+    [body.inc_votes, article_id]
+  );
+  return updatedArticle.rows[0];
+};
