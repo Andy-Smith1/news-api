@@ -63,7 +63,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("PATCH api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("200: Updates votes on article and responds with updated article", () => {
     return request(app)
       .patch("/api/articles/3")
@@ -91,6 +91,27 @@ describe("PATCH api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid type input");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("200: Returns array of all articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        response.body.articles.forEach((article) => {
+          expect(article).toEqual({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
       });
   });
 });

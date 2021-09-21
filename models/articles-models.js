@@ -33,3 +33,19 @@ exports.updateArticleVotes = async (article_id, body) => {
   );
   return updatedArticle.rows[0];
 };
+
+exports.selectArticles = async () => {
+  const results = await db.query("SELECT * FROM articles;");
+  const articles = results.rows;
+
+  const articlesWithComments = await Promise.all(
+    articles.map(async (article) => {
+      const commentCount = await countComments(article.article_id);
+      article.comment_count = commentCount;
+      delete article.body;
+      return article;
+    })
+  );
+
+  return articlesWithComments;
+};

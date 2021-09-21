@@ -1,6 +1,7 @@
 const {
   selectArticlesById,
   updateArticleVotes,
+  selectArticles,
 } = require("../models/articles-models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -19,6 +20,15 @@ exports.patchArticleVotes = async (req, res, next) => {
     const { body } = req;
     const updatedArticle = await updateArticleVotes(article_id, body);
     res.status(200).send({ article: updatedArticle });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getArticles = async (req, res, next) => {
+  try {
+    const articles = await selectArticles();
+    res.status(200).send({ articles });
   } catch (err) {
     next(err);
   }
