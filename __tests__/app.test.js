@@ -53,4 +53,12 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
+  test("404: returns not found message if searched for a valid, non existing id", () => {
+    return request(app)
+      .get("/api/articles/1000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found!");
+      });
+  });
 });
