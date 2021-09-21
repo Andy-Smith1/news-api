@@ -73,4 +73,24 @@ describe("PATCH api/articles/:article_id", () => {
         expect(response.body.article.votes).toBe(1);
       });
   });
+  test("400: Tells user if inc_votes is not included or if sending multiple properties", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ body: "hello", inc_votes: 1 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Only send votes update. e.g {inc_votes: 1}"
+        );
+      });
+  });
+  test("400: Informs user if only provide an inc_votes property in body but invalid type ", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: "cat" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid type input");
+      });
+  });
 });

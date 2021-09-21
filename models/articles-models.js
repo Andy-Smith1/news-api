@@ -24,6 +24,14 @@ exports.selectArticlesById = async (article_id) => {
 };
 
 exports.updateArticleVotes = async (article_id, body) => {
+  const keys = Object.keys(body);
+  if (!body.hasOwnProperty("inc_votes") || keys.length > 1) {
+    return Promise.reject({
+      status: 400,
+      msg: "Only send votes update. e.g {inc_votes: 1}",
+    });
+  }
+
   const updatedArticle = await db.query(
     `UPDATE articles
   SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`,
