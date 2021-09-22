@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app.js");
+const { get } = require("superagent");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -123,12 +124,33 @@ describe("GET /api/articles", () => {
         expect(response.body.articles).toBeSortedBy("created_at");
       });
   });
-  test("200: accepts sort_by queries for valid columns", () => {
+  test("200: accepts sort_by queries for valid columns, ordered ascending", () => {
     return request(app)
       .get("/api/articles?sort_by=title")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles).toBeSortedBy("title");
+        expect(response.body.articles).toBeSortedBy("title", {
+          descending: false,
+        });
+      });
+  });
+  test("200: accepts order_by query to change order to descending.", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=desc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("title", {
+          descending: true,
+        });
+      });
+  });
+  test("200: accepts topic query and filters results by topic if valid", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&topic=cats")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toHaveLength(1);
+        expect(response.body.articles[0].topic).toBe("cats");
       });
   });
 });
