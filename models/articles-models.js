@@ -26,6 +26,13 @@ exports.updateArticleVotes = async (article_id, body) => {
     });
   }
 
+  if (typeof body.inc_votes !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "inc_votes must be a number. e.g {inc_votes: 1}",
+    });
+  }
+
   const updatedArticle = await db.query(
     `UPDATE articles
   SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`,
@@ -96,6 +103,30 @@ exports.selectArticleComments = async (article_id) => {
     }
   }
 
-  console.log(comments.rows);
   return comments.rows;
+};
+
+exports.insertComment = async (article_id, body) => {
+  const commentBody = body.body;
+  const author = body.username;
+
+  if (Object.keys(body).length > 2) {
+    return Promise.reject({
+      status: 400,
+      msg: "Please ONLY provide valid username and body. e.g {username: validUser, body:someText}",
+    });
+  }
+
+  if (!commentBody || !author) {
+    return Promise.reject({
+      status: 400,
+      msg: "Please provide valid username and body. e.g {username: validUser, body:someText}",
+    });
+  }
+
+  const newComment = await db.query(
+    `INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3) RETURNING*;`,
+    [article_id, commentBody, author]
+  );
+  return newComment.rows[0];
 };

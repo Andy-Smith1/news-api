@@ -91,7 +91,9 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: "cat" })
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Bad request, check paths");
+        expect(response.body.msg).toBe(
+          "inc_votes must be a number. e.g {inc_votes: 1}"
+        );
       });
   });
 });
@@ -231,6 +233,61 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Not found!");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with updated comment, adds comment to DB", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: "I need a nap" })
+      .expect(201)
+      .then(async (response) => {
+        expect(response.body.comment).toEqual({
+          comment_id: expect.any(Number),
+          body: "I need a nap",
+          votes: 0,
+          author: "butter_bridge",
+          article_id: 2,
+          created_at: expect.any(String),
+        });
+
+        const articleTwoComments = await db.query(
+          `SELECT * FROM comments WHERE article_id = 2`
+        );
+        expect(articleTwoComments.rows.length).toBe(1);
+      });
+  });
+  test("400: Lets user know if username doesn't exist", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "12", body: 12 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("User does not exist");
+      });
+  });
+  test("400: Bad request if user includes other properties", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: "hi", votes: 2 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Please ONLY provide valid username and body. e.g {username: validUser, body:someText}"
+        );
+      });
+  });
+  test("400: Bad request if user does not include username or body", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ votes: 1 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Please provide valid username and body. e.g {username: validUser, body:someText}"
+        );
       });
   });
 });

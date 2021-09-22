@@ -8,6 +8,8 @@ exports.handleServerError = (err, req, res, next) => {
 exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad request, check paths" });
+  } else if (err.code === "23503") {
+    res.status(400).send({ msg: "User does not exist" });
   } else {
     next(err);
   }
