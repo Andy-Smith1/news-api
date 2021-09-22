@@ -91,7 +91,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: "cat" })
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Invalid type input");
+        expect(response.body.msg).toBe("Bad request, check paths");
       });
   });
 });
@@ -206,6 +206,31 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
         expect(response.body.comments).toHaveLength(13);
+      });
+  });
+  test("200: Returns empty array if passed an article_id which exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/11/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toHaveLength(0);
+        expect(response.body.comments).toEqual([]);
+      });
+  });
+  test("400: Returns bad request if passed an invalid article_id type", () => {
+    return request(app)
+      .get("/api/articles/one/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request, check paths");
+      });
+  });
+  test("404: Returns not found if passed a valid article_id type but id does not exist", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found!");
       });
   });
 });
