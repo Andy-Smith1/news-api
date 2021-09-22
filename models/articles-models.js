@@ -36,30 +36,45 @@ exports.updateArticleVotes = async (article_id, body) => {
 
 exports.selectArticles = async (
   sort_by = "created_at",
-  order = "ASC",
+  order = "asc",
   topic
 ) => {
+  const validColumns = [
+    "article_id",
+    "title",
+    "votes",
+    "topic",
+    "author",
+    "created_at",
+    "comment_count",
+  ];
+
+  if (!validColumns.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
+  }
+  if (order !== "asc" && order !== "desc") {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
   let queryString = `SELECT articles.article_id, title, articles.votes, topic, articles.author, articles.created_at,
     count(comments.body) AS comment_count 
     FROM articles
     LEFT OUTER JOIN comments
     ON articles.article_id = comments.article_id `;
 
+  const topicSlugs = await db.query(`SELECT slug FROM topics;`);
+
   if (topic) {
-    queryString += `WHERE articles.topic = '${topic}' `;
+    if (!topicSlugs.rows.find((row) => row.slug === topic)) {
+      return Promise.reject({ status: 400, msg: "Invalid topic query" });
+    } else {
+      queryString += `WHERE articles.topic = '${topic}' `;
+    }
   }
 
   queryString += `GROUP BY articles.article_id
     ORDER BY ${sort_by} ${order};`;
 
-  //   const articles =
-  //     await db.query(`SELECT articles.article_id, title, articles.votes, topic, articles.author, articles.created_at,
-  //     count(comments.body) AS comment_count
-  //     FROM articles
-  //     LEFT OUTER JOIN comments
-  //     ON articles.article_id = comments.article_id
-  //     GROUP BY articles.article_id
-  //     ORDER BY ${sort_by} ${order};`);
   const articles = await db.query(queryString);
   return articles.rows;
 };

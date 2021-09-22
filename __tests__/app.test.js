@@ -153,4 +153,39 @@ describe("GET /api/articles", () => {
         expect(response.body.articles[0].topic).toBe("cats");
       });
   });
+  test("200: Returns empty array if passed a valid topic but no articles found", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toHaveLength(0);
+        expect(response.body.articles).toEqual([]);
+      });
+  });
+  describe("Query errors", () => {
+    test("400: Returns error message if supplied non-existent column as sort_by", () => {
+      return request(app)
+        .get("/api/articles?sort_by=colour")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid sort_by query");
+        });
+    });
+    test("400: Returns error message if supplied invalid order", () => {
+      return request(app)
+        .get("/api/articles?order=cat")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid order query");
+        });
+    });
+    test("400: Returns error message if supplied invalid topic", () => {
+      return request(app)
+        .get("/api/articles?topic=fish")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid topic query");
+        });
+    });
+  });
 });
