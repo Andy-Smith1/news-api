@@ -109,9 +109,26 @@ describe("GET /api/articles", () => {
             topic: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
-            comment_count: expect.any(Number),
+            comment_count: expect.any(String),
           });
         });
+        expect(response.body.articles).toHaveLength(12);
+      });
+  });
+  test("200: sorts by date by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at");
+      });
+  });
+  test("200: accepts sort_by queries for valid columns", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("title");
       });
   });
 });

@@ -27,7 +27,8 @@ exports.patchArticleVotes = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
   try {
-    const articles = await selectArticles();
+    const { sort_by } = req.query;
+    const articles = await selectArticles(sort_by);
     res.status(200).send({ articles });
   } catch (err) {
     next(err);
