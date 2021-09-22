@@ -2,6 +2,7 @@ const {
   selectArticlesById,
   updateArticleVotes,
   selectArticles,
+  selectArticleComments,
 } = require("../models/articles-models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -30,6 +31,16 @@ exports.getArticles = async (req, res, next) => {
     const { sort_by, order, topic } = req.query;
     const articles = await selectArticles(sort_by, order, topic);
     res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getArticleComments = async (req, res, next) => {
+  try {
+    const { article_id } = req.params;
+    const comments = await selectArticleComments(article_id);
+    res.status(200).send({ comments });
   } catch (err) {
     next(err);
   }

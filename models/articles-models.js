@@ -78,3 +78,12 @@ exports.selectArticles = async (
   const articles = await db.query(queryString);
   return articles.rows;
 };
+
+exports.selectArticleComments = async (article_id) => {
+  const comments = await db.query(
+    `SELECT author, body, comment_id, created_at, votes FROM comments WHERE article_id = $1`,
+    [article_id]
+  );
+
+  return comments.rows;
+};

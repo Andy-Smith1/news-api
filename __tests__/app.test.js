@@ -162,7 +162,7 @@ describe("GET /api/articles", () => {
         expect(response.body.articles).toEqual([]);
       });
   });
-  describe("Query errors", () => {
+  describe("GET /api/articles ERRORS", () => {
     test("400: Returns error message if supplied non-existent column as sort_by", () => {
       return request(app)
         .get("/api/articles?sort_by=colour")
@@ -187,5 +187,25 @@ describe("GET /api/articles", () => {
           expect(response.body.msg).toBe("Invalid topic query");
         });
     });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Returns all comments related to passed article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        response.body.comments.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+        expect(response.body.comments).toHaveLength(13);
+      });
   });
 });
