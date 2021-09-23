@@ -2,6 +2,7 @@ const express = require("express");
 const articlesRouter = require("./articles-routers");
 const topicsRouter = require("./topics-routers");
 const fs = require("fs/promises");
+const commentsRouter = require("./comments-routers");
 
 const apiRouter = express.Router();
 
@@ -13,5 +14,6 @@ apiRouter.get("/", async (req, res) => {
 
 apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/topics", topicsRouter);
+apiRouter.use("/comments", commentsRouter);
 
 module.exports = apiRouter;
