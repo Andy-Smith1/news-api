@@ -357,3 +357,22 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Increases/decreases votes and returns comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment).toEqual({
+          comment_id: expect.any(Number),
+          votes: 17,
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+        });
+      });
+  });
+});
