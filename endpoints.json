@@ -4,24 +4,85 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        { "slug": "coding", "description": "Code is love, code is life" }
+      ]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles",
+    "queries": ["topic", "sort_by", "order(asc/desc)"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
+          "article_id": 28,
+          "title": "High Altitude Cooking",
+          "votes": 0,
           "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "author": "happyamy2016",
+          "created_at": "2020-01-04T00:24:00.000Z",
+          "comment_count": "5"
         }
       ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves the article with the specified article_id",
+    "exampleResponse": {
+      "article": {
+        "article_id": 14,
+        "title": "Who Will Manage Your Club in 2021?",
+        "body": "Managerial changes are too common in the modern day game. Already in the 16/17 season...",
+        "votes": 0,
+        "topic": "football",
+        "author": "happyamy2016",
+        "created_at": "2020-06-24T14:14:00.000Z",
+        "comment_count": 3
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increases the votes property of an article, responds with updated article",
+    "exampleBody": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "article_id": 14,
+        "title": "Who Will Manage Your Club in 2021?",
+        "body": "Managerial changes are too common in the modern day game. Already in the 16/17 season...",
+        "votes": 1,
+        "topic": "football",
+        "author": "happyamy2016",
+        "created_at": "2020-06-24T14:14:00.000Z"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of all comments for selected article",
+    "exampleResponse": {
+      "comments": [
+        {
+          "author": "grumpy19",
+          "body": "Rerum asperiores et aut illum iste. Sunt pariatur voluptate at quas nostrum.",
+          "comment_id": 119,
+          "created_at": "2020-01-24T20:11:00.000Z",
+          "votes": 20
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "add a new comment to an article, returns new comment",
+    "exampleBody": { "username": "jessjelly", "body": "test body" },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 304,
+        "author": "jessjelly",
+        "article_id": 14,
+        "votes": 0,
+        "created_at": "2021-09-23T08:06:37.537Z",
+        "body": "test body"
+      }
     }
   }
 }
