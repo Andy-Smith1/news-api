@@ -224,7 +224,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/one/comments")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Bad request, check paths");
+        expect(response.body.msg).toBe("Wrong type");
       });
   });
   test("404: Returns not found if passed a valid article_id type but id does not exist", () => {
@@ -288,6 +288,34 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe(
           "Please provide valid username and body. e.g {username: validUser, body:someText}"
         );
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: No content, deletes from DB", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(async (response) => {
+        const comments = await db.query(`SELECT * FROM comments;`);
+        expect(comments.rows).toHaveLength(17);
+      });
+  });
+  test("400: If comment_id is not a number, bad request", () => {
+    return request(app)
+      .delete("/api/comments/one")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong type");
+      });
+  });
+  test("404: If comment_id is valid type but not found", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment not found");
       });
   });
 });
