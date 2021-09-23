@@ -4,7 +4,7 @@ exports.deleteComment = async (req, res, next) => {
   try {
     const { comment_id } = req.params;
     const comment = await removeComment(comment_id);
-    res.status(204).send({ msg: "Comment deleted" });
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
