@@ -319,3 +319,17 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api/users", () => {
+  test("200: Returns array of users usernames", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users).toHaveLength(4);
+        response.body.users.forEach((user) => {
+          expect(user).toEqual({ username: expect.any(String) });
+        });
+      });
+  });
+});
