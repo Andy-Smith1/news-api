@@ -47,7 +47,7 @@ exports.updateArticleVotes = async (article_id, body) => {
 
 exports.selectArticles = async (
   sort_by = "created_at",
-  order = "asc",
+  order = "desc",
   topic,
   limit = 10,
   p = 1
@@ -80,7 +80,7 @@ exports.selectArticles = async (
 
   if (topic) {
     if (!topicSlugs.rows.find((row) => row.slug === topic)) {
-      return Promise.reject({ status: 400, msg: "Invalid topic query" });
+      return Promise.reject({ status: 404, msg: "Invalid topic query" });
     } else {
       queryString += `WHERE articles.topic = '${topic}' `;
     }
@@ -121,6 +121,14 @@ exports.selectArticleComments = async (article_id) => {
 exports.insertComment = async (article_id, body) => {
   const commentBody = body.body;
   const author = body.username;
+
+  const article = await db.query(
+    `SELECT * FROM articles WHERE article_id = $1`,
+    [article_id]
+  );
+  if (article.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Article not found" });
+  }
 
   if (Object.keys(body).length > 2) {
     return Promise.reject({

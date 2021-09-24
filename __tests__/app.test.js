@@ -27,6 +27,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then((response) => {
         const topics = response.body.topics;
+        expect(topics.length).toBeGreaterThan(1);
         topics.forEach((topic) => {
           expect(topic).toEqual({
             description: expect.any(String),
@@ -63,6 +64,14 @@ describe("GET /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Not found!");
       });
   });
+  test("400: Invalid ID type e.g string", () => {
+    return request(app)
+      .get("/api/articles/twelve")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong data type");
+      });
+  });
 });
 
 describe("PATCH /api/articles/:article_id", () => {
@@ -97,6 +106,15 @@ describe("PATCH /api/articles/:article_id", () => {
         );
       });
   });
+  test("404: non existent but valid ID ", () => {
+    return request(app)
+      .patch("/api/articles/1000")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article not found");
+      });
+  });
 });
 
 describe("GET /api/articles", () => {
@@ -105,6 +123,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((response) => {
+        expect(response.body.articles.length).toBeGreaterThan(1);
         response.body.articles.forEach((article) => {
           expect(article).toEqual({
             author: expect.any(String),
@@ -123,26 +142,28 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles).toBeSortedBy("created_at");
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
       });
   });
-  test("200: accepts sort_by queries for valid columns, ordered ascending", () => {
+  test("200: accepts sort_by queries for valid columns, ordered descending", () => {
     return request(app)
       .get("/api/articles?sort_by=title")
       .expect(200)
       .then((response) => {
         expect(response.body.articles).toBeSortedBy("title", {
-          descending: false,
+          descending: true,
         });
       });
   });
-  test("200: accepts order_by query to change order to descending.", () => {
+  test("200: accepts order_by query to change order to ascending.", () => {
     return request(app)
-      .get("/api/articles?sort_by=title&order=desc")
+      .get("/api/articles?sort_by=title&order=asc")
       .expect(200)
       .then((response) => {
         expect(response.body.articles).toBeSortedBy("title", {
-          descending: true,
+          descending: false,
         });
       });
   });
@@ -170,7 +191,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then((response) => {
         expect(response.body.articles.length).toBe(10);
-        expect(response.body.articles[0].article_id).toBe(7);
+        expect(response.body.articles[0].article_id).toBe(3);
       });
   });
   test("200: If passed a limit query, responds with correct number of articles", () => {
@@ -186,7 +207,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?limit=5&p=2")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles[0].article_id).toBe(9);
+        expect(response.body.articles[0].article_id).toBe(1);
       });
   });
   test("200: Response has a total_count property giving a total of articles with filters applied", () => {
@@ -218,7 +239,7 @@ describe("GET /api/articles", () => {
     test("400: Returns error message if supplied invalid topic", () => {
       return request(app)
         .get("/api/articles?topic=fish")
-        .expect(400)
+        .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("Invalid topic query");
         });
@@ -309,11 +330,11 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(articleTwoComments.rows.length).toBe(1);
       });
   });
-  test("400: Lets user know if username doesn't exist", () => {
+  test("404: Lets user know if username doesn't exist", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({ username: "12", body: 12 })
-      .expect(400)
+      .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("User does not exist");
       });
@@ -338,6 +359,15 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe(
           "Please provide valid username and body. e.g {username: validUser, body:someText}"
         );
+      });
+  });
+  test("404: Non existent but valid user ID", () => {
+    return request(app)
+      .post("/api/articles/1000/comments")
+      .send({ username: "butter_bridge", body: "I need a nap" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article not found");
       });
   });
 });
