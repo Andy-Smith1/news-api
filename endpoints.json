@@ -12,7 +12,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["topic", "sort_by", "order(asc/desc)"],
+    "queries": ["topic", "sort_by", "order (asc/desc)", "limit", "p (pages)"],
     "exampleResponse": {
       "articles": [
         {
@@ -43,7 +43,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "increases the votes property of an article, responds with updated article",
+    "description": "increases/decreases the votes property of an article, responds with updated article",
     "exampleBody": { "inc_votes": 1 },
     "exampleResponse": {
       "article": {
@@ -82,6 +82,46 @@
         "votes": 0,
         "created_at": "2021-09-23T08:06:37.537Z",
         "body": "test body"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment with provided comment_id"
+  },
+  "GET /api/users/": {
+    "description": "serves a list of usernames",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122"
+        },
+        {
+          "username": "grumpy19"
+        }
+      ]
+    }
+  },
+  "GET api/users/:username": {
+    "description": "serves more detail about the requested user",
+    "exampleResponse": {
+      "user": {
+        "username": "grumpy19",
+        "name": "Paul Grump",
+        "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increases/decreases votes property of supplied comment",
+    "exampleBody": { "inc_votes": 1 },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 5,
+        "author": "weegembump",
+        "article_id": 17,
+        "votes": 4,
+        "created_at": "2020-04-03T20:17:00.000Z",
+        "body": "Quod qui quia dignissimos sit tempore..."
       }
     }
   }
