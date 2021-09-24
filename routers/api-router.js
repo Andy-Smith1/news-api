@@ -7,7 +7,6 @@ const usersRouter = require("./users-routers");
 
 const apiRouter = express.Router();
 
-//endpoint list
 apiRouter.get("/", async (req, res) => {
   const endpoints = await fs.readFile("./endpoints.json", "utf-8");
   res.status(200).send(endpoints);
