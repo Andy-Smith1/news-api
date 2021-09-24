@@ -14,7 +14,7 @@ The API and all possible endpoints can be accessed [here](https://as-news-articl
 
 <br>
 
-To install locally, clone the repo to your chosen directory. Navigate to the repo run the terminal command below to install the dependencies.
+To install locally, fork and clone the repo to your chosen directory. Navigate to the repo run the terminal command below to install the dependencies.
 
 ```
 npm install
