@@ -4,8 +4,6 @@ const {
   handleCustomErrors,
   handlePSQLErrors,
 } = require("./errors/error-handlers.js");
-const topicsRouter = require("./routers/topics-routers.js");
-const articlesRouter = require("./routers/articles-routers.js");
 const apiRouter = require("./routers/api-router.js");
 
 const app = express();
