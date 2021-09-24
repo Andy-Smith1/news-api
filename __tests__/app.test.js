@@ -224,7 +224,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/one/comments")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Wrong type");
+        expect(response.body.msg).toBe("Wrong data type");
       });
   });
   test("404: Returns not found if passed a valid article_id type but id does not exist", () => {
@@ -307,7 +307,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/one")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Wrong type");
+        expect(response.body.msg).toBe("Wrong data type");
       });
   });
   test("404: If comment_id is valid type but not found", () => {
@@ -373,6 +373,45 @@ describe("PATCH /api/comments/:comment_id", () => {
           body: expect.any(String),
           article_id: expect.any(Number),
         });
+      });
+  });
+  test("404: If passed a valid comment id that does not exist", () => {
+    return request(app)
+      .patch("/api/comments/1000")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment not found");
+      });
+  });
+  test("400: If passed an invalid data type(string) as comment_id", () => {
+    return request(app)
+      .patch("/api/comments/one")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong data type");
+      });
+  });
+  test("400: If not provided with inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Please provide inc_votes property e.g {inc_votes: 1}"
+        );
+      });
+  });
+  test("400: If provided other properties in body other than inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1, body: "something" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Please ONLY provide inc_votes property e.g {inc_votes: 1}"
+        );
       });
   });
 });
