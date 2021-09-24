@@ -62,3 +62,19 @@ You can run the tests with:
 ```
 npm t
 ```
+
+<br>
+
+---
+
+<br>
+
+## Requirements
+
+<br>
+
+This app was built with the versions below. I would recommend these versions or higher.
+
+- [Node v16.6.0](https://nodejs.org/en/)
+
+- [PostgreSQL 13.3](https://www.postgresql.org/download/)
