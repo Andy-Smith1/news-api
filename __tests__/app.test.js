@@ -4,6 +4,7 @@ const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app.js");
 const { get } = require("superagent");
+const e = require("express");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -188,6 +189,15 @@ describe("GET /api/articles", () => {
         expect(response.body.articles[0].article_id).toBe(9);
       });
   });
+  test("200: Response has a total_count property giving a total of articles with filters applied", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("total_articles");
+        expect(response.body.total_articles).toBe(1);
+      });
+  });
   describe("GET /api/articles ERRORS", () => {
     test("400: Returns error message if supplied non-existent column as sort_by", () => {
       return request(app)
@@ -211,6 +221,22 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Invalid topic query");
+        });
+    });
+    test("400: Returns error if limit is not a number", () => {
+      return request(app)
+        .get("/api/articles?limit=ten")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Wrong data type");
+        });
+    });
+    test("400: Returns error if p is not a number", () => {
+      return request(app)
+        .get("/api/articles/p=two")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Wrong data type");
         });
     });
   });

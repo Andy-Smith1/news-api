@@ -83,10 +83,15 @@ exports.selectArticles = async (
   }
 
   queryString += `GROUP BY articles.article_id
-    ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2;`;
+    ORDER BY ${sort_by} ${order}`;
+  const allArticles = await db.query(queryString);
+  const totalArticles = allArticles.rows.length;
+  const limitedArticles = await db.query(`${queryString} LIMIT $1 OFFSET $2;`, [
+    limit,
+    offset,
+  ]);
 
-  const articles = await db.query(queryString, [limit, offset]);
-  return articles.rows;
+  return { articles: limitedArticles.rows, totalArticles };
 };
 
 exports.selectArticleComments = async (article_id) => {
