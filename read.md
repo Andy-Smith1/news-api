@@ -37,10 +37,9 @@ npm run setup-dbs
 npm run seed
 ```
 
-To start the server, install [nodemon](https://www.npmjs.com/package/nodemon) and run the listen command.
+To start the server, run the listen command.
 
 ```
-npm install -D nodemon
 npm run listen
 ```
 
