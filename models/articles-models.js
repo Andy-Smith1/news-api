@@ -151,3 +151,26 @@ exports.insertComment = async (article_id, body) => {
   );
   return newComment.rows[0];
 };
+
+exports.insertArticle = async (body) => {
+  const { author, title, topic } = body;
+  const articleBody = body.body;
+  const insertedArticle = await db.query(
+    `INSERT INTO articles (author, topic, title, body) VALUES ($1, $2, $3, $4) RETURNING*;`,
+    [author, topic, title, articleBody]
+  );
+
+  const newArticleId = insertedArticle.rows[0].article_id;
+
+  const newArticle = await db.query(
+    `SELECT articles.article_id, title, articles.votes, topic, articles.author, articles.body, articles.created_at,
+  count(comments.body) AS comment_count 
+  FROM articles
+  LEFT OUTER JOIN comments
+  ON articles.article_id = comments.article_id 
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id;`,
+    [newArticleId]
+  );
+  return newArticle.rows[0];
+};

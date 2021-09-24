@@ -296,7 +296,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         expect(response.body.comments).toHaveLength(10);
-        console.log(response.body.comments);
         expect(response.body.comments[0].comment_id).toBe(2);
       });
   });
@@ -518,6 +517,32 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(response.body.msg).toBe(
           "Please ONLY provide inc_votes property e.g {inc_votes: 1}"
         );
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("200: Returns new article and adds to DB", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "Something about cats",
+        body: "cats cats cats cats cats",
+        topic: "cats",
+      })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toEqual({
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          title: expect.any(String),
+          body: expect.any(String),
+          topic: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_count: expect.any(String),
+        });
       });
   });
 });

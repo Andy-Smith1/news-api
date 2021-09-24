@@ -5,11 +5,12 @@ const {
   getArticles,
   getArticleComments,
   addArticleComment,
+  addArticle,
 } = require("../controllers/articles-controllers");
 
 const articlesRouter = express.Router();
 
-articlesRouter.get("/", getArticles);
+articlesRouter.route("/").get(getArticles).post(addArticle);
 
 articlesRouter
   .route("/:article_id")
