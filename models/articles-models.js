@@ -44,7 +44,9 @@ exports.updateArticleVotes = async (article_id, body) => {
 exports.selectArticles = async (
   sort_by = "created_at",
   order = "asc",
-  topic
+  topic,
+  limit = 10,
+  p = 1
 ) => {
   const validColumns = [
     "article_id",
@@ -55,6 +57,7 @@ exports.selectArticles = async (
     "created_at",
     "comment_count",
   ];
+  const offset = (p - 1) * limit;
 
   if (!validColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
@@ -80,9 +83,9 @@ exports.selectArticles = async (
   }
 
   queryString += `GROUP BY articles.article_id
-    ORDER BY ${sort_by} ${order};`;
+    ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2;`;
 
-  const articles = await db.query(queryString);
+  const articles = await db.query(queryString, [limit, offset]);
   return articles.rows;
 };
 

@@ -115,7 +115,6 @@ describe("GET /api/articles", () => {
             comment_count: expect.any(String),
           });
         });
-        expect(response.body.articles).toHaveLength(12);
       });
   });
   test("200: sorts by date by default", () => {
@@ -162,6 +161,31 @@ describe("GET /api/articles", () => {
       .then((response) => {
         expect(response.body.articles).toHaveLength(0);
         expect(response.body.articles).toEqual([]);
+      });
+  });
+  test("200: responds with only the first 10 articles by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(10);
+        expect(response.body.articles[0].article_id).toBe(7);
+      });
+  });
+  test("200: If passed a limit query, responds with correct number of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toHaveLength(5);
+      });
+  });
+  test("200: Responds with page set to p query ", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles[0].article_id).toBe(9);
       });
   });
   describe("GET /api/articles ERRORS", () => {
