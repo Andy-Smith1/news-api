@@ -56,11 +56,7 @@ To use the app locally, you can use an API client such as Insomnia or Postman. A
 
 <br>
 
-To run the tests or add more, you will need to install [Jest](https://jestjs.io/docs/getting-started) , [Jest-sorted](https://www.npmjs.com/package/jest-sorted) and [Supertest](https://www.npmjs.com/package/supertest).
-
-```
-npm install -D jest jest-sorted supertest
-```
+Tests can be viewed/added in the \_\_tests\_\_ directory.
 
 You can run the tests with:
 
