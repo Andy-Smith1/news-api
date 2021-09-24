@@ -236,7 +236,7 @@ describe("GET /api/articles", () => {
           expect(response.body.msg).toBe("Invalid order query");
         });
     });
-    test("400: Returns error message if supplied invalid topic", () => {
+    test("404: Returns error message if supplied invalid topic", () => {
       return request(app)
         .get("/api/articles?topic=fish")
         .expect(404)
@@ -278,7 +278,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             body: expect.any(String),
           });
         });
-        expect(response.body.comments).toHaveLength(13);
+        expect(response.body.comments.length).toBeGreaterThan(0);
       });
   });
   test("200: Returns empty array if passed an article_id which exists but has no comments", () => {
@@ -288,6 +288,32 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then((response) => {
         expect(response.body.comments).toHaveLength(0);
         expect(response.body.comments).toEqual([]);
+      });
+  });
+  test("200: responds with only first 10 comments by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toHaveLength(10);
+        console.log(response.body.comments);
+        expect(response.body.comments[0].comment_id).toBe(2);
+      });
+  });
+  test("200: responds with requested limited number of comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toHaveLength(5);
+      });
+  });
+  test("200: responds with requested page", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments[0].comment_id).toBe(7);
       });
   });
   test("400: Returns bad request if passed an invalid article_id type", () => {

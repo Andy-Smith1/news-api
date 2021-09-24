@@ -98,10 +98,11 @@ exports.selectArticles = async (
   return { articles: limitedArticles.rows, totalArticles };
 };
 
-exports.selectArticleComments = async (article_id) => {
+exports.selectArticleComments = async (article_id, limit = 10, p = 1) => {
+  const offset = (p - 1) * limit;
   const comments = await db.query(
-    `SELECT author, body, comment_id, created_at, votes FROM comments WHERE article_id = $1;`,
-    [article_id]
+    `SELECT author, body, comment_id, created_at, votes FROM comments WHERE article_id = $1 LIMIT $2 OFFSET $3;`,
+    [article_id, limit, offset]
   );
 
   if (comments.rows.length === 0) {
