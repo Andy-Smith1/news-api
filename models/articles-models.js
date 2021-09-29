@@ -155,6 +155,7 @@ exports.insertComment = async (article_id, body) => {
 exports.insertArticle = async (body) => {
   const { author, title, topic } = body;
   const articleBody = body.body;
+
   const insertedArticle = await db.query(
     `INSERT INTO articles (author, topic, title, body) VALUES ($1, $2, $3, $4) RETURNING*;`,
     [author, topic, title, articleBody]

@@ -70,7 +70,7 @@ exports.addArticle = async (req, res, next) => {
   try {
     const { body } = req;
     const newArticle = await insertArticle(body);
-    res.status(200).send({ article: newArticle });
+    res.status(201).send({ article: newArticle });
   } catch (err) {
     next(err);
   }

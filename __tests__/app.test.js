@@ -361,7 +361,9 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "12", body: 12 })
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("User does not exist");
+        expect(response.body.msg).toBe(
+          "An entry does not exist, check usernames/topics"
+        );
       });
   });
   test("400: Bad request if user includes other properties", () => {
@@ -531,7 +533,7 @@ describe("POST /api/articles", () => {
         body: "cats cats cats cats cats",
         topic: "cats",
       })
-      .expect(200)
+      .expect(201)
       .then((response) => {
         expect(response.body.article).toEqual({
           article_id: expect.any(Number),
@@ -543,6 +545,50 @@ describe("POST /api/articles", () => {
           created_at: expect.any(String),
           comment_count: expect.any(String),
         });
+      });
+  });
+  test("404: If author or topic does not exist", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "andy",
+        title: "Something about cats",
+        body: "cats cats cats cats cats",
+        topic: "cats",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "An entry does not exist, check usernames/topics"
+        );
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "butter_bridge",
+            title: "Something about cats",
+            body: "cats cats cats cats cats",
+            topic: "dogs",
+          })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "An entry does not exist, check usernames/topics"
+            );
+          });
+      });
+  });
+  test("400: If not provided with all required fields", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+
+        topic: "cats",
+        title: "All about cats",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("All fields required");
       });
   });
 });

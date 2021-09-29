@@ -9,7 +9,11 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Wrong data type" });
   } else if (err.code === "23503") {
-    res.status(404).send({ msg: "User does not exist" });
+    res
+      .status(404)
+      .send({ msg: "An entry does not exist, check usernames/topics" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ msg: "All fields required" });
   } else {
     next(err);
   }
