@@ -608,4 +608,22 @@ describe("POST api/topics", () => {
         expect(dbCheck.rows).toHaveLength(4);
       });
   });
+  test("400: If topic already exists", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "cats", description: "all about cats" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Already exists");
+      });
+  });
+  test("400: If missing a field", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "gym" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("All fields required");
+      });
+  });
 });
