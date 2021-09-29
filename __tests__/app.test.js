@@ -524,7 +524,7 @@ describe("PATCH /api/comments/:comment_id", () => {
 });
 
 describe("POST /api/articles", () => {
-  test("200: Returns new article and adds to DB", () => {
+  test("201: Returns new article and adds to DB", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -654,6 +654,47 @@ describe("DELETE /api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Wrong data type");
+      });
+  });
+});
+
+describe("POST /api/users", () => {
+  test("201: Creates user in db", () => {
+    return request(app)
+      .post("/api/users")
+      .send({
+        username: "Andeh",
+        name: "Andy Smith",
+        avatar_url: "asjhdajshdlah.com",
+      })
+      .expect(201)
+      .then(async () => {
+        const user = await db.query(
+          `SELECT * FROM users WHERE username = 'Andeh';`
+        );
+        expect(user.rows[0]).toEqual({
+          username: "Andeh",
+          name: "Andy Smith",
+          avatar_url: "asjhdajshdlah.com",
+        });
+      });
+  });
+  test("400: User already exists ", () => {
+    return request(app)
+      .post("/api/users")
+      .send({ username: "butter_bridge", name: "butters" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Already exists");
+      });
+  });
+  test("400: Name or username not included in body", () => {
+    return request(app)
+      .post("/api/users")
+      .send({ username: "Andy123" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("All fields required");
       });
   });
 });

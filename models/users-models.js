@@ -15,3 +15,12 @@ exports.selectUserByUsername = async (username) => {
   }
   return user.rows[0];
 };
+
+exports.addUser = async (body) => {
+  const { username, name, avatar_url } = body;
+  const newUser = await db.query(
+    `INSERT INTO users (username, name, avatar_url) VALUES ($1, $2, $3) RETURNING*;`,
+    [username, name, avatar_url]
+  );
+  return newUser.rows[0];
+};
