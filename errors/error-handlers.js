@@ -14,6 +14,8 @@ exports.handlePSQLErrors = (err, req, res, next) => {
       .send({ msg: "An entry does not exist, check usernames/topics" });
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "All fields required" });
+  } else if (err.code === "23505") {
+    res.status(400).send({ msg: "Already exists" });
   } else {
     next(err);
   }
