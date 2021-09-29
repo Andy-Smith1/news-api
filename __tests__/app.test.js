@@ -593,7 +593,7 @@ describe("POST /api/articles", () => {
   });
 });
 
-describe("POST api/topics", () => {
+describe("POST /api/topics", () => {
   test("201: Returns new topic and adds to db", () => {
     return request(app)
       .post("/api/topics")
@@ -624,6 +624,36 @@ describe("POST api/topics", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("All fields required");
+      });
+  });
+});
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: Deletes from DB", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(async () => {
+        const article = await db.query(
+          `SELECT * FROM articles WHERE article_id = 1`
+        );
+        expect(article.rows).toEqual([]);
+      });
+  });
+  test("404: article_id is valid but does not exist", () => {
+    return request(app)
+      .delete("/api/articles/1000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found!");
+      });
+  });
+  test("400: article_id is invalid data type", () => {
+    return request(app)
+      .delete("/api/articles/one")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong data type");
       });
   });
 });
