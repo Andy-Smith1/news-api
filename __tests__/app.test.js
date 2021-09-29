@@ -592,3 +592,20 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+describe("POST api/topics", () => {
+  test("201: Returns new topic and adds to db", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "dogs", description: "Dogs > Cats" })
+      .expect(201)
+      .then(async (response) => {
+        expect(response.body.topic).toEqual({
+          slug: "dogs",
+          description: "Dogs > Cats",
+        });
+        const dbCheck = await db.query(`SELECT * FROM topics`);
+        expect(dbCheck.rows).toHaveLength(4);
+      });
+  });
+});
