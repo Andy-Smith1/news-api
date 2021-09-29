@@ -6,6 +6,7 @@ const {
   getArticleComments,
   addArticleComment,
   addArticle,
+  deleteArticle,
 } = require("../controllers/articles-controllers");
 
 const articlesRouter = express.Router();
@@ -15,7 +16,8 @@ articlesRouter.route("/").get(getArticles).post(addArticle);
 articlesRouter
   .route("/:article_id")
   .get(getArticlesById)
-  .patch(patchArticleVotes);
+  .patch(patchArticleVotes)
+  .delete(deleteArticle);
 
 articlesRouter
   .route("/:article_id/comments")
