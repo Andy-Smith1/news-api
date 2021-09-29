@@ -125,5 +125,54 @@
         "body": "Quod qui quia dignissimos sit tempore..."
       }
     }
+  },
+  "POST /api/articles": {
+    "description": "add a new article",
+    "exampleBody": {
+      "author": "Andeh",
+      "title": "Test title",
+      "body": "Test body",
+      "topic": "valid topic"
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 41,
+        "title": "Test title",
+        "votes": 0,
+        "topic": "valid topic",
+        "author": "Andeh",
+        "body": "Test body",
+        "created_at": "2021-09-29T10:49:03.045Z",
+        "comment_count": "0"
+      }
+    }
+  },
+  "POST /api/topics": {
+    "description": "add a new topic",
+    "exampleBody": { "slug": "dogs", "description": "All things dogs!" },
+    "exampleResponse": {
+      "topic": {
+        "slug": "dogs",
+        "description": "All things dogs!"
+      }
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes article by article_id"
+  },
+  "POST /api/users": {
+    "description": "create a new user",
+    "exampleBody": {
+      "username": "test-user123",
+      "name": "Test User",
+      "avatar_url": "https://www.example.com"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "test-user123",
+        "name": "Test User",
+        "avatar_url": "https://www.example.com"
+      }
+    }
   }
 }
