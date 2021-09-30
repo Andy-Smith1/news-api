@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const commentsRouter = require("../routers/comments-routers");
 
 exports.removeComment = async (comment_id) => {
   const deletedComment = await db.query(
@@ -11,7 +12,7 @@ exports.removeComment = async (comment_id) => {
   return deletedComment.rows;
 };
 
-exports.updateComment = async (comment_id, body) => {
+exports.updateCommentVotes = async (comment_id, body) => {
   const updateBy = body.inc_votes;
   const updatedComment = await db.query(
     `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING*;`,
@@ -35,4 +36,15 @@ exports.updateComment = async (comment_id, body) => {
   }
 
   return updatedComment.rows[0];
+};
+
+exports.updateCommentBody = async (comment_id, body) => {
+  const comment = await db.query(
+    `UPDATE comments SET body = $1 WHERE comment_id = $2 RETURNING*;`,
+    [body.body, comment_id]
+  );
+  if (comment.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Comment not found" });
+  }
+  return comment.rows[0];
 };

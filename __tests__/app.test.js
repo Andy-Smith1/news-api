@@ -746,3 +746,49 @@ describe("PATCH /api/articles/:article_id/body", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id/body", () => {
+  test("200: Updates comment body and returns new comment", () => {
+    return request(app)
+      .patch("/api/comments/1/body")
+      .send({ body: "new body" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment).toEqual({
+          comment_id: expect.any(Number),
+          body: "new body",
+          author: expect.any(String),
+          votes: expect.any(Number),
+          article_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("404: valid comment_id but not found", () => {
+    return request(app)
+      .patch("/api/comments/1000/body")
+      .send({ body: "" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment not found");
+      });
+  });
+  test("400: Invalid comment_id", () => {
+    return request(app)
+      .patch("/api/comments/one/body")
+      .send({ body: "" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong data type");
+      });
+  });
+  test("400: Body not included", () => {
+    return request(app)
+      .patch("/api/comments/1/body")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("All fields required");
+      });
+  });
+});
