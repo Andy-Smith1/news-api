@@ -12,7 +12,14 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["topic", "sort_by", "order (asc/desc)", "limit", "p (pages)"],
+    "queries": [
+      "title",
+      "topic",
+      "sort_by",
+      "order (asc/desc)",
+      "limit",
+      "p (pages)"
+    ],
     "exampleResponse": {
       "articles": [
         {
@@ -172,6 +179,47 @@
         "username": "test-user123",
         "name": "Test User",
         "avatar_url": "https://www.example.com"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id/body": {
+    "description": "edit body of article",
+    "exampleBody": { "body": "new article body..." },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "News App",
+        "votes": 0,
+        "topic": "coding",
+        "author": "andy",
+        "body": "new article body...",
+        "created_at": "2020-11-07T06:03:00.000Z",
+        "comment_count": "8"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id/body": {
+    "description": "edit body of comment",
+    "exampleBody": "new comment body...",
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 31,
+        "author": "andy",
+        "article_id": 1,
+        "votes": 11,
+        "created_at": "2020-09-26T16:16:00.000Z",
+        "body": "new comment body..."
+      }
+    }
+  },
+  "PATCH /api/users/:username": {
+    "description": "edit users name or avatar",
+    "exampleBody": { "name": "Andrew", "avatar_url": "www.newavatarurl.com" },
+    "exampleResponse": {
+      "user": {
+        "username": "andy_s123",
+        "name": "Andrew",
+        "avatar_url": "www.newavatarurl.com"
       }
     }
   }
