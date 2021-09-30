@@ -7,6 +7,7 @@ const {
   addArticleComment,
   addArticle,
   deleteArticle,
+  patchArticleBody,
 } = require("../controllers/articles-controllers");
 
 const articlesRouter = express.Router();
@@ -23,4 +24,7 @@ articlesRouter
   .route("/:article_id/comments")
   .get(getArticleComments)
   .post(addArticleComment);
+
+articlesRouter.patch("/:article_id/body", patchArticleBody);
+
 module.exports = articlesRouter;
