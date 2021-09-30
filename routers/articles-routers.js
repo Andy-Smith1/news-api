@@ -8,6 +8,7 @@ const {
   addArticle,
   deleteArticle,
   patchArticleBody,
+  getArticleByTitle,
 } = require("../controllers/articles-controllers");
 
 const articlesRouter = express.Router();

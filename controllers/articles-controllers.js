@@ -7,6 +7,7 @@ const {
   insertArticle,
   removeArticle,
   updateArticleBody,
+  selectArticleByTitle,
 } = require("../models/articles-models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -32,13 +33,14 @@ exports.patchArticleVotes = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
   try {
-    const { sort_by, order, topic, limit, p } = req.query;
+    const { sort_by, order, topic, limit, p, title } = req.query;
     const { articles, totalArticles } = await selectArticles(
       sort_by,
       order,
       topic,
       limit,
-      p
+      p,
+      title
     );
     res.status(200).send({ total_articles: totalArticles, articles });
   } catch (err) {

@@ -50,7 +50,8 @@ exports.selectArticles = async (
   order = "desc",
   topic,
   limit = 10,
-  p = 1
+  p = 1,
+  title
 ) => {
   const validColumns = [
     "article_id",
@@ -76,13 +77,21 @@ exports.selectArticles = async (
     LEFT OUTER JOIN comments
     ON articles.article_id = comments.article_id `;
 
-  const topicSlugs = await db.query(`SELECT slug FROM topics;`);
-
   if (topic) {
+    const topicSlugs = await db.query(`SELECT slug FROM topics;`);
     if (!topicSlugs.rows.find((row) => row.slug === topic)) {
       return Promise.reject({ status: 404, msg: "Invalid topic query" });
     } else {
       queryString += `WHERE articles.topic = '${topic}' `;
+    }
+  }
+
+  if (title) {
+    const validArticles = await db.query(`SELECT title FROM articles;`);
+    if (!validArticles.rows.find((row) => row.title === title)) {
+      return Promise.reject({ status: 404, msg: "Article not found" });
+    } else {
+      queryString += `WHERE articles.title = '${title}' `;
     }
   }
 

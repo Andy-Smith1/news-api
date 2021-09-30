@@ -185,6 +185,22 @@ describe("GET /api/articles", () => {
         expect(response.body.articles).toEqual([]);
       });
   });
+  test("200: accepts title query and returns requested article", () => {
+    return request(app)
+      .get("/api/articles?title=Am I a cat?")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles[0]).toEqual({
+          article_id: expect.any(Number),
+          title: "Am I a cat?",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: expect.any(String),
+          votes: 0,
+          comment_count: expect.any(String),
+        });
+      });
+  });
   test("200: responds with only the first 10 articles by default", () => {
     return request(app)
       .get("/api/articles")
@@ -254,10 +270,18 @@ describe("GET /api/articles", () => {
     });
     test("400: Returns error if p is not a number", () => {
       return request(app)
-        .get("/api/articles/p=two")
+        .get("/api/articles?p=two")
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Wrong data type");
+        });
+    });
+    test("404: article not found when searching by title", () => {
+      return request(app)
+        .get("/api/articles?title=something")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article not found");
         });
     });
   });
