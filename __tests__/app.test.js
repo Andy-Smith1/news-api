@@ -792,3 +792,39 @@ describe("PATCH /api/comments/:comment_id/body", () => {
       });
   });
 });
+
+describe("PATCH /api/users/:username", () => {
+  test("200: Returns updated user", () => {
+    return request(app)
+      .patch("/api/users/butter_bridge")
+      .send({ avatar_url: "www.newlink.com", name: "Butters" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.user).toEqual({
+          username: "butter_bridge",
+          name: "Butters",
+          avatar_url: "www.newlink.com",
+        });
+      });
+  });
+  test("404: User not found", () => {
+    return request(app)
+      .patch("/api/users/andrew")
+      .send({ avatar_url: "www.newlink.com", name: "Andy" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("User not found");
+      });
+  });
+  test("400: name or avatar_url not included in bod", () => {
+    return request(app)
+      .patch("/api/users/butter_bridge")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Please include name and/or avatar_url properties to edit"
+        );
+      });
+  });
+});
