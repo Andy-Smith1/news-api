@@ -698,3 +698,51 @@ describe("POST /api/users", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id/body", () => {
+  test("200: Updates and returns updated article", () => {
+    return request(app)
+      .patch("/api/articles/1/body")
+      .send({ body: "new body" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toEqual({
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          title: expect.any(String),
+          body: "new body",
+          topic: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  test("404: Article ID not found", () => {
+    return request(app)
+      .patch("/api/articles/1000/body")
+      .send({ body: "hello" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article not found");
+      });
+  });
+  test("400: Invalid article ID", () => {
+    return request(app)
+      .patch("/api/articles/one/body")
+      .send({ body: "" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Wrong data type");
+      });
+  });
+  test("400: No body provided", () => {
+    return request(app)
+      .patch("/api/articles/1/body")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("All fields required");
+      });
+  });
+});
