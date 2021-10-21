@@ -320,7 +320,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         expect(response.body.comments).toHaveLength(10);
-        expect(response.body.comments[0].comment_id).toBe(2);
+        expect(response.body.comments[0].comment_id).toBe(9);
       });
   });
   test("200: responds with requested limited number of comments", () => {
@@ -336,7 +336,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments?limit=5&p=2")
       .expect(200)
       .then((response) => {
-        expect(response.body.comments[0].comment_id).toBe(7);
+        expect(response.body.comments[0].comment_id).toBe(8);
       });
   });
   test("400: Returns bad request if passed an invalid article_id type", () => {
